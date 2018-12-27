@@ -1,0 +1,76 @@
+Link to the web application: https://github.com/TheSamsai/cybersecurity-project
+
+The application is a simple web message board that allows users to register and post messages and delete messages they have made in the past. An admin account created with the login credentials "admin:admin" can delete any messages that have been posted onto the message board. The application was made using the official project template.
+
+1. Issue: Broken Authentication
+
+Steps to reproduce:
+1. Open the OWASP ZAP tool
+2. Input the URL of the application (most likely "http://localhost:8080") into the Quick Start "URL to Attack" text box
+3. Press "Attack"
+3. After the attack has completed, open the Sites tab and navigate to "POST:login(username, password)"
+4. Right-click the "POST:login(username, password)" and select Attack->Fuzz 
+5. Highlight the "ZAP" part of the password parameter with the mouse
+6. Click the "Add" button and the "Add" button in the window that shows up
+7. Click the drop-down menu and select "Numberzz"
+8. Set the "From" value to 0 and the "To value to 10000 and the "Increment" to 1
+9. Click "Add" and "Ok"
+10. Click "Start Fuzzer", the ZAP will now send 10000 login requests in rapid succession to the web application
+11. The application will accept the requests and make guessing password to individual accounts possible.
+
+Possible fixes:
+
+The application should check if numerous login request originate from the same location and reject repeated attempts or slow them down so as to make bruteforcing user login credentials unviable. The login could also be reinforced by introducing two-factor authentication to prevent simple password guessing. The application should also enforce reasonable password policy from the users and reject passwords that are too easy to guess, such as passwords that are only a couple of characters long or same as the username. In addition the current method of storing passwords in the system is unsafe and passwords are stored in plain text. The password storage code should be updated to hash passwords with a difficult to crack hashing algorithm.
+
+2. Issue: Broken Access Control
+
+Steps to reproduce:
+1. Click the link to register a new account
+2. Enter a username of your choice and a password
+3. Repeat the previous steps to register another, separate account
+4. Log into one of the accounts
+5. Enter any title and any message and click "Submit Query" 
+6. Now log into the other account and click the message
+7. Copy the message ID from the page URL and navigate to page http://localhost:8080/delete/<insert-ID-here>
+8. The message the other user posted will now be deleted.
+
+Possible fixes:
+
+The application should check the user ID of the user when the "delete" request is made and ensure that the user has the required permissions to delete the message. This could be as simple as querying the database for messages by the user and ensuring that the current message is part of those messages or checking the user ID associated with the message to be deleted and making sure the ID matches that of the user making the deletion request. Currently the only way the application tries to protect other users' posts is to not display the deletion link for the posts, but this does not offer protection against URL manipulation attacks. The application should also likely have a proper role control, as currently the administrative powers are tied to a single "admin" account and admin privileges are checked by comparing the account name rather than checking user privileges from a separate system.
+
+3. Issue: Cross-Site Scripting
+
+Steps to reproduce:
+1. Register an account on the web application and log in.
+2. Write "<script>alert("xss");</script>" into the Title text box.
+3. Press "Submit Query"
+4. When the page is reloaded, the message "xss" should be displayed.
+
+Possible fixes:
+
+The application should escape all HTML tags when displaying user-submitted content on the page. In this project this could be done by replacing the "th:utext" tags in the project's HTML templates with "th:text" tags that automatically escape characters like "<" and ">", disallowing the creation of HTML tags in user-submitted content.
+
+4. Issue: Using Components with Known Vulnerabilities
+
+Steps to reproduce:
+1. Enter the project folder on the development system.
+2. Run the Dependency-Check using "mvn dependency-check:check"
+3. Wait until the dependency check has completed (this may take some time)
+4. You will see a list of multiple CVEs appear.
+
+Possible fixes:
+    
+The issue can be fixed by updating the project's dependencies to versions that have been patched against the vulnerabilities. If such versions do not exist, the dependencies should be replaced with alternatives that are not vulnerable or the functionality should be duplicated to the necessary degree while making sure the replacement code is not vulnerable to the same or other vulnerabilities.
+
+5. Issue: Security Misconfiguration
+
+Steps to reproduce:
+1. Click the "Click here to register a new account" link.
+2. Enter "asd" as the username and "2" as the password.
+3. Press "Submit Query"
+4. Repeat with the same username "asd" and the same password "2"
+4. A default error page comes up which reveals system information, such as the SQL statement the system uses to register users.
+
+Possible fixes:
+
+The problem could be solved by creating a controller for the "/error" mapping that displays a generic error message to the user instead of the exact errors that happened in the application code. This would prevent attackers from gaining knowledge of the internal workings of the application and thus make it more difficult for the attackers to attempt other, more harmful attacks. The application should also try to handle common error situations, such as the attempts to register multiple users of the same name, in a user-friendly way without generating unhelpful error messages.
