@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Message board</title>
+    </head>
+    <body>
+        <a th:href="@{/list}">Back</a>
+        
+        <h3><span th:utext="${message.title}">Title</span></h3>
+        
+        <pre th:utext="${message.content}">Content</pre>
+        
+        <ul>
+            <li th:each="message : ${messages}">
+                <a th:href="@{/message/{id}(id=${message.id})}"><span th:utext="${message.title}">message</span></a>
+            </li>
+        </ul>
+        
+        <div th:if="${owned}">
+            <a th:href="@{/delete/{id}(id=${message.id})}">Delete</a>
+        </div>
+    </body>
+</html>

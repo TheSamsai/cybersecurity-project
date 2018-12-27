@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Message board</title>
+    </head>
+    <body>
+        <h1>Message board:</h1>
+        
+        <p>Hello, "<span th:utext="${account.name}">User</span>"!</p>
+        
+        <form th:action="@{/list}" method="POST">
+            <p><label>Title: </label></p>
+            <p><input type="text" name="title"/></p>
+            <p><label>Message: </label></p>
+            <textarea name="content" rows="4" cols="50">...</textarea>
+            <p><input type="submit"/></p>
+        </form>
+        
+        <form th:action="@{/user}" method="POST">
+            <p><label>Search from user: </label></p>
+            <p><input type="text" name="query"/></p>
+            <p><input type="submit"/></p>
+        </form>
+        
+        <h2>Posts: </h2>
+        
+        <ul>
+            <li th:each="message : ${messages}">
+                <a th:href="@{/message/{id}(id=${message.id})}"><span th:utext="${message.title}">message</span> - <span th:utext="${message.account.name}">Account</span> </a>
+            </li>
+        </ul>
+    </body>
+</html>
