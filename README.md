@@ -1,6 +1,6 @@
 # Cybersecurity Course Project
 
-*IMPORTANT:* This program is designed to be vulnerable and it is not recommended to be used in it's current state. Numerous modifications will be needed to use the program securely.
+**IMPORTANT:** This program is designed to be vulnerable and it is not recommended to be used in it's current state. Numerous modifications will be needed to use the program securely.
 
 ## Description
 
